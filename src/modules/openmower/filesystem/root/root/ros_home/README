@@ -1,0 +1,2 @@
+This folder contains the state of the ROS system.
+Delete its content to reset the mower - Do not delete the folder itself or openmower does not start
