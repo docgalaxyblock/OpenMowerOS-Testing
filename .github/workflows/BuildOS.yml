@@ -1,0 +1,120 @@
+name: Build OpenMowerOS
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "**"
+      - "main"
+    paths:
+      - "src/**"
+      - ".github/workflows/BuildOS.yml"
+    tags-ignore:
+      - "**"
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+    paths:
+      - "src/**"
+      - ".github/workflows/BuildOS.yml"
+
+# Allow to stop obsolete workflows
+concurrency:
+  group: ci-buildtrain-${{ github.ref }}-1
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install Dependencies
+        shell: bash
+        run: |
+          sudo apt-get -qq update
+          sudo apt-get install --yes coreutils p7zip-full qemu-user-static zip
+
+      - name: Checkout CustomPiOS
+        uses: actions/checkout@v3
+        with:
+          repository: "guysoft/CustomPiOS"
+          path: CustomPiOS
+
+      - name: Checkout OpenMowerOS
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ github.repository }}
+          path: OpenMowerOS
+          submodules: true
+
+      - name: Download Raspberry Pi OS Source Image
+        shell: bash
+        run: aria2c -d OpenMowerOS/src/image/ --seed-time=0 https://downloads.raspberrypi.org/raspios_lite_arm64_latest.torrent
+
+      - name: Comparing Checksums
+        shell: bash
+        run: |
+          cd OpenMowerOS/src/image
+          curl -JL https://downloads.raspberrypi.org/raspios_lite_arm64_latest.sha256 | awk '{print $1"  "$2}' | sha256sum -c
+
+      - name: Update CustomPiOS Paths
+        shell: bash
+        run: |
+          cd OpenMowerOS/src
+          ../../CustomPiOS/src/update-custompios-paths
+
+      - name: Build Image
+        shell: bash
+        run: |
+          sudo modprobe loop
+          cd OpenMowerOS/src
+          sudo bash -x ./build_dist
+          sudo chown -R $USER ./
+
+      - name: Copy output
+        id: copy-image
+        shell: bash
+        run: |
+          source OpenMowerOS/src/config
+          NOW=$(date +"%Y-%m-%d-%Hh")
+          IMAGE="${NOW}_${DIST_NAME}-${DIST_VERSION}"
+
+          cp OpenMowerOS/src/workspace/*.img $IMAGE.img
+
+          echo "image=${IMAGE}" >> $GITHUB_OUTPUT
+
+      - name: Upload failed Logfile
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-failed-${{ steps.copy-image.outputs.image }}.log
+          path: OpenMowerOS/src/build.log
+
+      - name: Compress the image
+        shell: bash
+        run: |
+          CPU_COUNT="$(nproc)"
+          echo -e "\e[32mUsing ${CPU_COUNT} Cores for compression...\e[0m"
+          xz -efkvz9T"${CPU_COUNT}" ${{ steps.copy-image.outputs.image }}.img
+
+      - name: Calculating checksums
+        shell: bash
+        run: |
+          sha256sum ${{ steps.copy-image.outputs.image }}.img > ${{ steps.copy-image.outputs.image }}.img.sha256
+          sha256sum ${{ steps.copy-image.outputs.image }}.img.xz > ${{ steps.copy-image.outputs.image }}.img.xz.sha256
+
+      - name: Upload Compressed Image
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ steps.copy-image.outputs.image }}.img.xz
+          path: ${{ steps.copy-image.outputs.image }}.img.xz
+
+      - name: Upload Compressed Image Checksum
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ steps.copy-image.outputs.image }}.img.xz.sha256
+          path: ${{ steps.copy-image.outputs.image }}.img.xz.sha256
+
+      - name: Upload Image Checksum
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ steps.copy-image.outputs.image }}.img.sha256
+          path: ${{ steps.copy-image.outputs.image }}.img.sha256
