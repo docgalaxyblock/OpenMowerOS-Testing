@@ -1,3 +1,7 @@
+[![build badge](https://github.com/docgalaxyblock/OpenMowerOS-Testing/actions/workflows/BuildOS.yml/badge.svg?branch=dev)](https://github.com/docgalaxyblock/OpenMowerOS-Testing/actions)
+[![build](https://img.shields.io/github/actions/workflow/status/docgalaxyblock/OpenMowerOS-Testing/BuildOS.yml?branch=dev)](https://github.com/docgalaxyblock/OpenMowerOS-Testing/actions)
+![downloads](https://img.shields.io/github/downloads/docgalaxyblock/OpenMowerOS-Testing/total)
+
 # OpenMowerOS
 
 *Based on [CustomPiOS](https://github.com/guysoft/CustomPiOS)*
