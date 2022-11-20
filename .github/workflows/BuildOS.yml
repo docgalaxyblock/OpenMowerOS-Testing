@@ -31,7 +31,7 @@ jobs:
         shell: bash
         run: |
           sudo apt-get -qq update
-          sudo apt-get install --yes coreutils p7zip-full qemu-user-static zip
+          sudo apt-get install --yes aria2 coreutils p7zip-full qemu-user-static zip
 
       - name: Checkout CustomPiOS
         uses: actions/checkout@v3
@@ -46,15 +46,47 @@ jobs:
           path: OpenMowerOS
           submodules: true
 
-      - name: Download Raspberry Pi OS Source Image
+      - name: Base Image Checksum
+        id: checksum
         shell: bash
-        run: aria2c -d OpenMowerOS/src/image/ --seed-time=0 https://downloads.raspberrypi.org/raspios_lite_arm64_latest.torrent
+        run: |
+          source OpenMowerOS/src/config
+          cd OpenMowerOS/src/image
+          FILENAME=$(basename ${DOWNLOAD_URL_CHECKSUM})
+          wget -O ${FILENAME} ${DOWNLOAD_URL_CHECKSUM}
+          FILE_CONTENT=$(head -n 1 $FILENAME)
+          CHECKSUM=$(echo $FILE_CONTENT | cut -d' ' -f1)
+
+          echo "CHECKSUM=${CHECKSUM}" >> $GITHUB_OUTPUT
+          echo "FILENAME=${FILENAME}" >> $GITHUB_OUTPUT
+
+          echo "DOWNLOAD_URL_IMAGE=${DOWNLOAD_URL_IMAGE}" >> $GITHUB_OUTPUT
+
+      - name: Cache Base Source Image
+        id: cache
+        #if: 
+        uses: actions/cache@v3
+        with:
+          path: OpenMowerOS/src/image/*.img.xz
+          key: base-image-${{ steps.checksum.outputs.CHECKSUM }}
+
+      - name: Download Base Source Image via Torrent
+        if: steps.cache.outputs.cache-hit != 'true' && endswith(steps.checksum.outputs.DOWNLOAD_URL_IMAGE, '.torrent')
+        shell: bash
+        run: aria2c -d OpenMowerOS/src/image --seed-time=0 ${{ steps.checksum.outputs.DOWNLOAD_URL_IMAGE }}
+
+      - name: Download Base Source Image via wget
+        if: steps.cache.outputs.cache-hit != 'true' && !endswith(steps.checksum.outputs.DOWNLOAD_URL_IMAGE, '.torrent')
+        shell: bash
+        run: |
+          cd OpenMowerOS/src/image
+          wget ${{ steps.checksum.outputs.DOWNLOAD_URL_IMAGE }}
 
       - name: Comparing Checksums
         shell: bash
         run: |
           cd OpenMowerOS/src/image
-          curl -JL https://downloads.raspberrypi.org/raspios_lite_arm64_latest.sha256 | awk '{print $1"  "$2}' | sha256sum -c
+          sha256sum -b ${{ steps.checksum.outputs.FILENAME }}
 
       - name: Update CustomPiOS Paths
         shell: bash
@@ -68,6 +100,11 @@ jobs:
           sudo modprobe loop
           cd OpenMowerOS/src
           sudo bash -x ./build_dist
+          
+      - name: Fix permissions
+        if: always()
+        shell: bash
+        run: |
           sudo chown -R $USER ./
 
       - name: Copy output
@@ -75,8 +112,8 @@ jobs:
         shell: bash
         run: |
           source OpenMowerOS/src/config
-          NOW=$(date +"%Y-%m-%d-%Hh")
-          IMAGE="${NOW}_${DIST_NAME}-${DIST_VERSION}"
+          NOW=$(date +"%Y_%m_%d-%H_%M")
+          IMAGE="${NOW}-${DIST_NAME}-${DIST_VERSION}"
 
           cp OpenMowerOS/src/workspace/*.img $IMAGE.img
 
@@ -119,3 +156,37 @@ jobs:
         with:
           name: ${{ steps.copy-image.outputs.image }}.img.sha256
           path: ${{ steps.copy-image.outputs.image }}.img.sha256
+
+      - name: Create "Latest Development Build" Pre-release
+        uses: "ncipollo/release-action@v1.11.2"
+        with:
+          allowUpdates: true
+          #artifactErrorsFailBuild:
+          artifacts: |
+            ${{ steps.copy-image.outputs.image }}.img.xz
+            ${{ steps.copy-image.outputs.image }}.img.xz.sha256
+            ${{ steps.copy-image.outputs.image }}.img.sha256
+          ###body: Latest Development Build
+          #commit: 
+          draft: false
+          generateReleaseNotes: false
+          name: Latest Development Build
+          #omitBody: true
+          #omitBodyDuringUpdate: true
+          #omitDraftDuringUpdate: true
+          #omitName: true
+          #omitNameDuringUpdate: true
+          #omitPrereleaseDuringUpdate: true
+          prerelease: true
+          removeArtifacts: true
+          replacesArtifacts: true
+          skipIfReleaseExists: false
+          updateOnlyUnreleased: true
+          tag: latest
+          token: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Cleanup image artifacts
+        if: always()
+        shell: bash
+        run: |
+          rm ${{ steps.copy-image.outputs.image }}*img*
