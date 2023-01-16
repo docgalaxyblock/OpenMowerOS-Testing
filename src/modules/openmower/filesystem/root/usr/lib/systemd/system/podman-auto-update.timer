@@ -1,0 +1,18 @@
+# Podman auto update timer
+# used to update the openmower software
+[Unit]
+Description=Podman auto-update timer
+
+[Timer]
+# OpenMowerOS ships default with a deactivated auto update feature
+# The defaults are:
+#
+# OnCalendar=Sat *-*-1..7 1:00  # First saturday of every month at 1:00AM
+# RandomizedDelaySec=7.200      # Random start delay up to 2h
+#
+OnCalendar=Sat *-*-1..7 1:00
+RandomizedDelaySec=7.200
+Persistent=true
+
+[Install]
+WantedBy=timers.target
