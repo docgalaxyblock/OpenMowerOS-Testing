@@ -19,8 +19,13 @@ RestartSec=10s
 TimeoutStartSec=1h
 TimeoutStopSec=120s
 
+# Remove id files from  previous starts
 ExecStartPre=/bin/rm -f %t/container-openmower.pid %t/container-openmower.ctr-id
 
+# Remove any openmower-debug containers
+ExecStartPre=/usr/bin/podman rm -i openmower-debug
+
+# Start the open_mower_ros container
 ExecStart=/usr/bin/podman run --conmon-pidfile %t/container-openmower.pid --cidfile %t/container-openmower.ctr-id --cgroups=no-conmon \
   --replace --detach --tty --privileged \
   --name openmower \
@@ -33,9 +38,10 @@ ExecStart=/usr/bin/podman run --conmon-pidfile %t/container-openmower.pid --cidf
   --env ROSOUT_DISABLE_FILE_LOGGING=True \
   --tmpfs /root/.ros/log \
   --label io.containers.autoupdate=image \
-  ghcr.io/clemenselflein/open_mower_ros:releases-${OM_VERSION}
+  ${OM_REG}/${OM_REPO}/open_mower_ros:${OM_VERSION}
 
-#ExecStartPost=/usr/bin/podman image prune --force --filter image=open_mower_ros
+# Remove orphane images from podman auto-update execution
+ExecStartPost=/usr/bin/podman image prune --force --filter label=org.opencontainers.image.title=open_mower_ros
 
 ExecStop=/usr/bin/podman stop --time 10 --ignore --cidfile %t/container-openmower.ctr-id
 

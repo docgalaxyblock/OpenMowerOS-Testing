@@ -1,11 +1,36 @@
 # select which version of the OpenMower software to run.
 #
-# - beta:     This one is the _most stable_ one of the three. I try to keep this as stable as possible.
-# - alpha:    For people who like to test stuff. This one will be updated fairly often as well and without notice. Only use it, if you want to be among the first people to get new features, but prepare to have issues.
-# - testing:  This one changes very often. Only use it if you want to take part in the development or are asked to use it by a developer.
+#
+# - "releases-beta":    This one is the _most stable_ one of the three. I try to keep this as stable as possible.
+# - "releases-alpha":   For people who like to test stuff. This one will be updated fairly often as well and without notice. Only use it, if you want to be among the first people to get new features, but prepare to have issues.
+# - "releases-edge":    This one changes very often. Only use it if you want to take part in the development or are asked to use it by a developer.
+#
 #
 # Check the https://github.com/ClemensElflein/open_mower_ros repo for the current state.
+#
+# advanced users may want to select different versions as the "releases-..." versions
 
-OM_VERSION="beta"
 
+OM_VERSION="releases-beta"
+
+
+
+
+
+###################################
+#     Options for developers      #
+# DO NOT TOUCH as a normal user ! #
+###################################
+
+OM_REPO="clemenselflein"
+
+OM_REG="ghcr.io"
+
+
+
+###################################
+# Export section - DO NOT TOUCH ! #
+###################################
+export OM_REG
+export OM_REPO
 export OM_VERSION
