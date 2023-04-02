@@ -35,9 +35,9 @@ systemctl_if_exists mask wpa-supplicant.service
 systemctl_if_exists mask raspberrypi-net-mods.service
 systemctl_if_exists mask hciuart.service
 
-echo_green "Get socat for GPS redirection (debug port)..."
+echo_green "Get some debugging tools..."
 apt-get update --allow-releaseinfo-change
-apt-get install --yes socat
+apt-get install --yes tmux screen minicom socat
 
 echo_green "Disabling podman socket..."
 systemctl disable podman.socket
