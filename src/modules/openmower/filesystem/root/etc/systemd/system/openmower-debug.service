@@ -33,9 +33,9 @@ ExecStart=/usr/bin/podman run --conmon-pidfile %t/container-openmower-debug.pid 
 
 #ExecStartPost=/usr/bin/podman image prune --force --filter image=open_mower_ros
 
-ExecStop=/usr/bin/podman stop --ignore --cidfile %t/container-openmower-debug.ctr-id -t 10
+ExecStop=/usr/bin/podman stop --time 10 --ignore --cidfile %t/container-openmower-debug.ctr-id
 
-ExecStopPost=/usr/bin/podman rm --ignore --force --cidfile %t/container-openmower-debug.ctr-id
+#ExecStopPost=/usr/bin/podman rm --ignore --force --cidfile %t/container-openmower-debug.ctr-id
 
 PIDFile=%t/container-openmower-debug.pid
 
