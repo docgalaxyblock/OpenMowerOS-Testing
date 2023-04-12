@@ -45,6 +45,10 @@ systemctl disable podman.socket
 echo_green "Disabling podman auto update..."
 systemctl disable podman-auto-update.timer podman-auto-update.service 
 
+echo_green "Installing mosquitto and masking the normal mosquitto.service..."
+apt-get install --yes mosquitto
+systemctl_if_exists mask mosquitto.service
+systemctl disable openmower-mqtt-bridge.service
 
 
 #cleanup

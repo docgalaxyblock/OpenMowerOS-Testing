@@ -1,0 +1,21 @@
+[Unit]
+Description=OpenMower MQTT Bridge
+Documentation=man:mosquitto.conf(5) man:mosquitto(8)
+After=network.target openmower.service openmower-debug.service
+Wants=network.target
+StartLimitBurst=0
+
+[Service]
+Type=notify
+NotifyAccess=main
+ExecStart=/usr/sbin/mosquitto -c /etc/mosquitto/mosquitto-openmower.conf
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+RestartSec=10s
+ExecStartPre=/bin/mkdir -m 740 -p /var/log/mosquitto
+ExecStartPre=/bin/chown mosquitto /var/log/mosquitto
+ExecStartPre=/bin/mkdir -m 740 -p /run/mosquitto
+ExecStartPre=/bin/chown mosquitto /run/mosquitto
+
+[Install]
+WantedBy=multi-user.target

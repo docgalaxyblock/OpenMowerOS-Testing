@@ -1,0 +1,26 @@
+#####################################################
+### example config to forward mqtt to another broker
+#####################################################
+###
+### copy this file to another one ending with .conf
+###
+###    to enable/disable the service execute:
+### sudo systemctl  enable --now openmower-mqtt-bridge
+### sudo systemctl disable --now openmower-mqtt-bridge
+###
+### 
+### this is only for openmower version that do not
+### have the "External MQTT Broker" config options yet
+###
+
+connection bridge-to-external-broker
+
+try_private true
+cleansession true
+topic # out 0 "" openmower/
+topic openmower/# in 0
+
+address 192.168.XXX.XXX
+
+#remote_username user
+#remote_password pass
