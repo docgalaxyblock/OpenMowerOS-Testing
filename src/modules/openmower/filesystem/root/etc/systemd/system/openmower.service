@@ -31,6 +31,7 @@ ExecStart=/usr/bin/podman run --conmon-pidfile %t/container-openmower.pid --cidf
   --volume /root/rosconsole.config:/config/rosconsole.config \
   --env ROSCONSOLE_CONFIG_FILE=/config/rosconsole.config \
   --env ROSOUT_DISABLE_FILE_LOGGING=True \
+  --tmpfs /root/.ros/log \
   --label io.containers.autoupdate=image \
   ghcr.io/clemenselflein/open_mower_ros:releases-${OM_VERSION}
 
