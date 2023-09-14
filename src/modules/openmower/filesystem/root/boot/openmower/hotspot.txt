@@ -2,7 +2,7 @@
 # Comitup hotspot configuration
 #
 
-ap_name: OpenMower-<nn>
+ap_name: <hostname>
 ap_password: OpenMower
 
 
@@ -12,11 +12,8 @@ ap_password: OpenMower
 # You can connect a second wifi dongle to the mower to:
 # - A: Use a big antenna dongle to improve your home wifi signal.
 # - B: Use a small & cheap dongle to only use for the hotspot
-#
-# For case A the wifi_device should be "wlan0"
-#   (the hotspot uses the internal antenna)
-# For case B the wifi_device should be "wlan1"
-#   (the hotspot uses the usb dongle)
+# If 'enable_appliance_mode: false' is set the here choosen device
+# is the one that connects to your home network.
 
 #primary_wifi_device: wlan0
 

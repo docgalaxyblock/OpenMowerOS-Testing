@@ -18,7 +18,7 @@ unpack /filesystem/root /
 chown -R pi:pi /home/pi
 chmod +x /home/pi/*.sh
 
-cp /etc/comitup.conf.example /boot/openmower/hotspot-example.txt
+cp /boot/openmower/hotspot.txt /boot/openmower/hotspot-example.txt
 
 echo_green "Get the latest releases-beta mower_config.sh example..."
 wget -O /boot/openmower/mower_config.txt https://github.com/ClemensElflein/open_mower_ros/raw/releases/beta/src/open_mower/config/mower_config.sh.example
