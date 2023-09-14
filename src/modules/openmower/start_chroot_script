@@ -20,8 +20,8 @@ chmod +x /home/pi/*.sh
 
 cp /etc/comitup.conf.example /boot/openmower/hotspot-example.txt
 
-echo_green "Get the latest mower_config.sh example..."
-wget -O /boot/openmower/mower_config.txt https://raw.githubusercontent.com/ClemensElflein/open_mower_ros/main/src/open_mower/config/mower_config.sh.example
+echo_green "Get the latest releases-beta mower_config.sh example..."
+wget -O /boot/openmower/mower_config.txt https://github.com/ClemensElflein/open_mower_ros/raw/releases/beta/src/open_mower/config/mower_config.sh.example
 
 # replace default comitup modules configs and paths
 echo_green "Replace comitup path and config..."
@@ -48,6 +48,10 @@ systemctl disable podman-auto-update.timer podman-auto-update.service
 echo_green "Installing mosquitto and masking the normal mosquitto.service..."
 apt-get install --yes mosquitto
 systemctl_if_exists mask mosquitto.service
+
+echo_green "Setting startup rules for openmower services..."
+systemctl enable openmower.service
+systemctl disable openmower-debug.service
 systemctl disable openmower-mqtt-bridge.service
 
 
