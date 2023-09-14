@@ -15,8 +15,10 @@ install_cleanup_trap
 
 echo_green "Copying files to root filesystem and applying permissions..."
 unpack /filesystem/root /
+
+echo_green "Cloning OpenMowerOS-Tools..."
+git clone https://github.com/ClemensElflein/OMIAUH /home/pi/openmoweros-tools
 chown -R pi:pi /home/pi
-chmod +x /home/pi/*.sh
 
 cp /boot/openmower/hotspot.txt /boot/openmower/hotspot-example.txt
 
