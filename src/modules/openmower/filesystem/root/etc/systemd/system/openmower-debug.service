@@ -23,7 +23,7 @@ TimeoutStopSec=120s
 ExecStartPre=/bin/rm -f %t/container-openmower-debug.pid %t/container-openmower-debug.ctr-id
 
 ExecStart=/usr/bin/podman run --conmon-pidfile %t/container-openmower-debug.pid --cidfile %t/container-openmower-debug.ctr-id --cgroups=no-conmon \
-  --replace --detach --tty --privileged \
+  --replace --detach --tty --init --privileged \
   --name openmower-debug \
   --network=host \
   --volume /dev:/dev \

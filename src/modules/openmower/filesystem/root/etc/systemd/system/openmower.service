@@ -27,7 +27,7 @@ ExecStartPre=/usr/bin/podman rm -i openmower-debug
 
 # Start the open_mower_ros container
 ExecStart=/usr/bin/podman run --conmon-pidfile %t/container-openmower.pid --cidfile %t/container-openmower.ctr-id --cgroups=no-conmon \
-  --replace --detach --tty --privileged \
+  --replace --detach --tty --init --privileged \
   --name openmower \
   --network=host \
   --volume /dev:/dev \
