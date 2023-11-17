@@ -24,8 +24,8 @@ export MODULES="base,pkgupgrade,piconfig,podman,comitup,openocd,openmower"
 # Compress not needed due compression done in workflow
 export BASE_RELEASE_COMPRESS=no
 
-export DOWNLOAD_URL_CHECKSUM="https://downloads.raspberrypi.org/raspios_lite_arm64_latest.sha256"
-export DOWNLOAD_URL_IMAGE="https://downloads.raspberrypi.org/raspios_lite_arm64_latest.torrent"
+export DOWNLOAD_URL_CHECKSUM="https://downloads.raspberrypi.org/raspios_oldstable_lite_arm64_latest.sha256"
+export DOWNLOAD_URL_IMAGE="https://downloads.raspberrypi.org/raspios_oldstable_lite_arm64_latest.torrent"
 
 
 
