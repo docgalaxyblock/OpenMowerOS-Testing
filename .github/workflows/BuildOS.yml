@@ -33,13 +33,13 @@ jobs:
           sudo apt-get install --yes aria2 coreutils p7zip-full qemu-user-static zip
 
       - name: Checkout CustomPiOS
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: "guysoft/CustomPiOS"
           path: CustomPiOS
 
       - name: Checkout OpenMowerOS
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: ${{ github.repository }}
           path: OpenMowerOS
@@ -64,7 +64,7 @@ jobs:
       - name: Cache Base Source Image
         id: cache
         #if: 
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: OpenMowerOS/src/image/*.img.xz
           key: base-image-${{ steps.checksum.outputs.CHECKSUM }}
@@ -124,7 +124,7 @@ jobs:
 
       - name: Upload failed Logfile
         if: failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build-failed-${{ steps.rename-image.outputs.image }}.log
           path: OpenMowerOS/src/build.log
@@ -143,19 +143,19 @@ jobs:
           sha256sum ${{ steps.rename-image.outputs.image }}.img.xz > ${{ steps.rename-image.outputs.image }}.img.xz.sha256
 
       - name: Upload Compressed Image
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.rename-image.outputs.image }}.img.xz
           path: ${{ steps.rename-image.outputs.image }}.img.xz
 
       - name: Upload Compressed Image Checksum
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.rename-image.outputs.image }}.img.xz.sha256
           path: ${{ steps.rename-image.outputs.image }}.img.xz.sha256
 
       - name: Upload Image Checksum
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.rename-image.outputs.image }}.img.sha256
           path: ${{ steps.rename-image.outputs.image }}.img.sha256
