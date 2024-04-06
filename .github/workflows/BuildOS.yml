@@ -36,6 +36,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: "guysoft/CustomPiOS"
+          ref: "63da54b86ab566c558e9084568d326413f6585d8"
           path: CustomPiOS
 
       - name: Checkout OpenMowerOS
